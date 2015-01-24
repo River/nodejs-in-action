@@ -45,7 +45,7 @@ function joinRoom(socket, room) {
     currentRoom[socket.id] = room;
     socket.emit('joinResult', {'room': room});
     socket.broadcast.to(room).emit('message', {
-        'text': nickNames[socket.id] + ' has joined ' + room + '.';
+        'text': nickNames[socket.id] + ' has joined ' + room + '.'
     });
 
     var usersInRoom = io.sockets.clients(room);
@@ -57,7 +57,7 @@ function joinRoom(socket, room) {
                 if (i > 0) {
                     usersInRoomSummary += ', ';
                 }
-                usersInRoomSummary += nicknames[userSocketId];
+                usersInRoomSummary += nickNames[userSocketId];
             }
         }
         usersInRoomSummary += '.';
