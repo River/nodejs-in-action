@@ -4,6 +4,8 @@ var path = require('path');
 var mime = require('mime');
 var cache = {};
 
+var CACHING_ON = false;
+
 function send404(response) {
   response.writeHead(404, {'Content-Type': 'text/plain'});
   response.write('Error 404: resource not found.');
@@ -19,7 +21,7 @@ function sendFile(response, filePath, fileContents) {
 }
 
 function serveStatic(response, cache, absPath) {
-  if (cache[absPath]) {     
+  if (cache[absPath]) {
     sendFile(response, absPath, cache[absPath]);
   } else {
     fs.exists(absPath, function(exists) {
@@ -28,7 +30,7 @@ function serveStatic(response, cache, absPath) {
           if (err) {
             send404(response);
           } else {
-            cache[absPath] = data;
+            if (CACHING_ON) cache[absPath] = data;
             sendFile(response, absPath, data);
           }
         });
@@ -40,8 +42,10 @@ function serveStatic(response, cache, absPath) {
 }
 
 var server = http.createServer(function(req, res) {
+  // console.log("Request for " + req.url);
+  
   var filePath = false;
-  if (req.url == '/') {
+  if (req.url == '/' || req.url == '/?') {
     filePath = 'public/index.html';
   } else {
     filePath = 'public' + req.url;
